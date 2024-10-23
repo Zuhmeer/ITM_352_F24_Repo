@@ -26,6 +26,7 @@ with open("/Users/javoningram/Downloads/survey_1000.csv", "r") as csvfile:
         line_number += 1
 print(f"Number of non-zero values: {number_values}")
 print(f"Average RealInc: ${round(total_RealInc / number_values,2)})")
+print(f"Min RealInc: {min_RealInc} Max RealInc: ${round(max_RealInc,2)}")
                 
 
 
