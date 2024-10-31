@@ -78,47 +78,45 @@ def display_rows(data):
 
 # Create a menu option that shows total sales by region and order type
 def total_sales_by_region_order_type(data):
-    result = data.groupby(['sales_region', 'order_type'])['quantity'].sum()
+    total_sales_by_region_order_type = data.groupby(['sales_region', 'order_type'])['quantity'].sum()
     print("\nTotal Sales by Region and Order Type:")
-    print(result)
+    print(total_sales_by_region_order_type)
     
-
 # Create a menu option that shows average sales by region with average by state and sale type
 def average_sales_by_region_state_sale_type(data):
-    result = data.groupby(['sales_region', 'customer_state', 'order_type'])['unit_price'].mean()
+    average_sales_by_region_state_sale_type = data.groupby(['sales_region', 'customer_state', 'order_type'])['unit_price'].mean()
     print("\nAverage Sales by Region, State, and Sale Type:")
-    print(result)
+    print(average_sales_by_region_state_sale_type)
 
 # Create a menu option that shows sales by customer type and order type by state
 def sales_by_customer_type_order_type_by_state(data):
-    
-    result = data.groupby(['customer_type', 'order_type', 'customer_state'])['unit_price'].sum() 
+    sales_by_customer_type_order_type_by_state = data.groupby(['customer_type', 'order_type', 'customer_state'])['unit_price'].sum() 
     print("\nSales by customer type and order type by state:")                                 
-    print(result)
+    print(sales_by_customer_type_order_type_by_state)
 
 # Create a menu option that shows total sales quantity and price by region and product
 def total_sales_quantity_price_by_region_product(data):
-    result = data.groupby(['sales_region', 'product_category'])[['quantity', 'unit_price']].sum()
+    total_sales_quantity_price_by_region_product = data.groupby(['sales_region', 'product_category'])[['quantity', 'unit_price']].sum()
     print("\nTotal Sales Quantity and Price by Region and Product:")
-    print(result)
+    print(total_sales_quantity_price_by_region_product)
 
 # Create a menu option that shows total sales quantity and price by customer type
 def total_sales_quantity_price_by_customer_type(data):
-    result = data.groupby('customer_type')[['quantity', 'unit_price']].sum()
+    total_sales_quantity_price_by_customer_type = data.groupby('customer_type')[['quantity', 'unit_price']].sum()
     print("\nTotal Sales Quantity and Price by Customer Type:")
-    print(result)
+    print(total_sales_quantity_price_by_customer_type)
 
 # Create a menu option that shows max and min Sales Price of Sales by Category
 def max_min_sales_price_by_category(data):
-    result = data.groupby('product_category')['unit_price'].agg(['max', 'min'])
+    results = data.groupby('product_category')['unit_price'].agg(['max', 'min'])
     print("\nMax and Min Sales Price by Category:")
-    print(result)
+    print(results) 
 
 # Create a menu option that shows unique employees by region
 def employees_by_region(data):
-    unique_employees = data.groupby('sales_region')['employee_id'].nunique()
+    unique_employees_by_region = data.groupby('sales_region')['employee_id'].nunique()
     print("\nNumber of Unique Employees by Region:")
-    print(unique_employees)
+    print(unique_employees_by_region)
 
 # Display menu that interacts with user
 def display_menu(data):
@@ -210,7 +208,7 @@ def total_sales_quantity_price_by_customer_type(data):
 
 # Print the max and min sales price of sales by category
 def max_min_sales_price_by_category(data):
-    pivot_table = pd.pivot_table(data, index="product_category", values="unit_price", aggfunc=[max, min], fill_value=0)
+    pivot_table = pd.pivot_table(data, index="product_category", values="unit_price", aggfunc=["max", "min"], fill_value=0)
     print("\nMax and Min Sales Price by Category:")
     print(pivot_table)
     return pivot_table
