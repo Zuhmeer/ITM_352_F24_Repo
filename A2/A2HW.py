@@ -229,9 +229,9 @@ def custom_pivot_table(data):
     try:
         # Prompt the user for an input then split by comma.
         # I use AI to help me with this part of making the pivot table, It helped me use .split to split the input by commas
-        index = list(filter(None, input("Enter the column name(s) for the index (use a comma to separated for multiple columns): ").split(",")))
-        columns = list(filter(None, input("Enter the column name(s) for the columns (use a comma to separated for multiple columns): ").split(",")))
-        values = list(filter(None, input("Enter the column name(s) for the values (use a comma to separated for multiple columns): ").split(",")))
+        index = list(filter(None, input("Enter the column name(s) for the index (use a comma to separate multiple columns): ").split(",")))
+        columns = list(filter(None, input("Enter the column name(s) for the columns (use a comma to separate multiple columns): ").split(",")))
+        values = list(filter(None, input("Enter the column name(s) for the values (use a comma to separate multiple columns): ").split(",")))
         
 
         # Create and display the pivot table
