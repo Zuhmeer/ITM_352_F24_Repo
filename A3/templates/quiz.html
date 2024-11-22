@@ -2,22 +2,55 @@
 <html lang="en">
 <head>
     <title>Quiz</title>
+    <style>
+        .progress {
+            width: 100%;
+            background-color: #f3f3f3;
+        }
+        .progress-bar {
+            height: 30px;
+            width: 0%;
+            background-color: #4caf50;
+            text-align: center;
+            color: white;
+            line-height: 30px;
+        }
+    </style>
 </head>
 <body>
-    <h1> {{ username }}</h1>
+    <h1>{{ username }}</h1>
     <h1>Question {{ num }}</h1>
     <p>{{ question }}</p>
+
+ <!-- Progress Bar -->
+<div class="progress" style="width: 100%; background-color: #e9ecef; height: 20px;">
+    <div class="progress-bar" role="progressbar" 
+         style="width: {{ progress }}%; background-color: #17a2b8;" 
+         aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+        {{ progress }}%
+    </div>
+</div>
 
     <!-- Feedback message -->
     {% if feedback %}
         <p style="color: green;">{{ feedback }}</p>
     {% endif %}
 
+    <!-- Display options -->
     <form method="post">
         {% for option in options %}
             <input type="radio" name="option" value="{{ option }}" required> {{ option }}<br>
         {% endfor %}
         <button type="submit">Next</button>
     </form>
+
+    <!-- Hint Button -->
+    {% if hint_used %}
+        <p>You have used your 1 hint for this quiz which subtracts 1 point from final score. </p>
+    {% else %}
+        <form action="{{ url_for('use_hint') }}" method="post">
+            <button type="submit" class="btn btn-info">Use Hint</button>
+        </form>
+    {% endif %}
 </body>
 </html>
