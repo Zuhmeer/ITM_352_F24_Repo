@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Quiz</title>
+</head>
+<body>
+    <h1> {{ username }}</h1>
+    <h1>Question {{ num }}</h1>
+    <p>{{ question }}</p>
+
+    <!-- Feedback message -->
+    {% if feedback %}
+        <p style="color: green;">{{ feedback }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% for option in options %}
+            <input type="radio" name="option" value="{{ option }}" required> {{ option }}<br>
+        {% endfor %}
+        <button type="submit">Next</button>
+    </form>
+</body>
+</html>
