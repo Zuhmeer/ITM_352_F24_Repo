@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Standings</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <title>NFL Team Standings</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <header>
-        <h1>Team Standings</h1>
-        <a href="/">Back to Home</a>
+        <h1>NFL Team Standings</h1>
+        <a href="/" class="back-link">Back to Home</a>
     </header>
     <main>
         <div id="standings-container">
@@ -23,40 +23,66 @@
                 const container = document.getElementById('standings-container');
                 container.innerHTML = '';
 
-                const divisions = {};
-                data.forEach(team => {
-                    if (!divisions[team.division]) {
-                        divisions[team.division] = [];
-                    }
-                    divisions[team.division].push(team);
-                });
+                // Define conference order
+                const conferences = {
+                    'AFC': [
+                        'AFC East', 'AFC North', 'AFC South', 'AFC West'
+                    ],
+                    'NFC': [
+                        'NFC East', 'NFC North', 'NFC South', 'NFC West'
+                    ]
+                };
 
-                for (const division in divisions) {
-                    const divHeader = document.createElement('h2');
-                    divHeader.textContent = division;
-                    container.appendChild(divHeader);
+                // Create conference sections
+                Object.keys(conferences).forEach(conferenceKey => {
+                    const conferenceSection = document.createElement('div');
+                    conferenceSection.className = 'conference-section';
 
-                    const table = document.createElement('table');
-                    table.innerHTML = `
-                        <tr>
-                            <th>Team</th>
-                            <th>Wins</th>
-                            <th>Losses</th>
-                            <th>Ties</th>
-                        </tr>
-                    `;
-                    divisions[division].forEach(team => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${team.team}</td>
-                            <td>${team.total_wins}</td>
-                            <td>${team.total_losses}</td>
-                            <td>${team.total_ties}</td>
+                    const conferenceTitle = document.createElement('h2');
+                    conferenceTitle.textContent = `${conferenceKey} FOOTBALL CONFERENCE`;
+                    conferenceSection.appendChild(conferenceTitle);
+
+                    conferences[conferenceKey].forEach(divisionName => {
+                        // Filter teams for this division
+                        const divisionTeams = data.filter(team => team.division === divisionName)
+                            .sort((a, b) => b.total_wins - a.total_wins);
+
+                        // Create division section
+                        const divisionSection = document.createElement('div');
+                        divisionSection.className = 'division-section';
+
+                        const divisionTitle = document.createElement('h3');
+                        divisionTitle.textContent = `${divisionName}`;
+                        divisionSection.appendChild(divisionTitle);
+
+                        const table = document.createElement('table');
+                        table.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                    <th>W</th>
+                                    <th>L</th>
+                                    <th>T</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${divisionTeams.map(team => `
+                                    <tr>
+                                        <td>${team.team}</td>
+                                        <td>${team.total_wins}</td>
+                                        <td>${team.total_losses}</td>
+                                        <td>${team.total_ties}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
                         `;
-                        table.appendChild(row);
+                        
+                        divisionSection.appendChild(table);
+                        conferenceSection.appendChild(divisionSection);
                     });
-                    container.appendChild(table);
-                }
+
+                    container.appendChild(conferenceSection);
+                });
             });
     </script>
 </body>
