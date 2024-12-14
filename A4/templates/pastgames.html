@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Games</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Past Games</h1>
+        <a href="/">Back to Home</a>
+    </header>
+    <main>
+        <div id="games-container">
+            <h2>Loading Past Games...</h2>
+        </div>
+    </main>
+    <script>
+        fetch('/past_games')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('games-container');
+                container.innerHTML = '';
+
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <tr>
+                        <th>Home Team</th>
+                        <th>Away Team</th>
+                        <th>Home Score</th>
+                        <th>Away Score</th>
+                        <th>Result</th>
+                    </tr>
+                `;
+                data.forEach(game => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${game.home_team}</td>
+                        <td>${game.away_team}</td>
+                        <td>${game.home_score}</td>
+                        <td>${game.away_score}</td>
+                        <td>${game.result}</td>
+                    `;
+                    table.appendChild(row);
+                });
+                container.appendChild(table);
+            });
+    </script>
+</body>
+</html>

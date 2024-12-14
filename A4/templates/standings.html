@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Standings</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Team Standings</h1>
+        <a href="/">Back to Home</a>
+    </header>
+    <main>
+        <div id="standings-container">
+            <h2>Loading Standings...</h2>
+        </div>
+    </main>
+    <script>
+        fetch('/standings')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('standings-container');
+                container.innerHTML = '';
+
+                const divisions = {};
+                data.forEach(team => {
+                    if (!divisions[team.division]) {
+                        divisions[team.division] = [];
+                    }
+                    divisions[team.division].push(team);
+                });
+
+                for (const division in divisions) {
+                    const divHeader = document.createElement('h2');
+                    divHeader.textContent = division;
+                    container.appendChild(divHeader);
+
+                    const table = document.createElement('table');
+                    table.innerHTML = `
+                        <tr>
+                            <th>Team</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Ties</th>
+                        </tr>
+                    `;
+                    divisions[division].forEach(team => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${team.team}</td>
+                            <td>${team.total_wins}</td>
+                            <td>${team.total_losses}</td>
+                            <td>${team.total_ties}</td>
+                        `;
+                        table.appendChild(row);
+                    });
+                    container.appendChild(table);
+                }
+            });
+    </script>
+</body>
+</html>
