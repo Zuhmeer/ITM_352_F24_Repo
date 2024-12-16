@@ -3,53 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predict Game</title>
-    <script>
-        // Fetch the teams data from the /teams route
-        async function fetchTeams() {
-            try {
-                const response = await fetch('/teams');
-                const data = await response.json();
-
-                const teams = data.teams;  // Extract the team array from the response
-                const homeTeamSelect = document.getElementById('home_team');
-                const awayTeamSelect = document.getElementById('away_team');
-
-                // Populate both the home and away team dropdowns
-                teams.forEach(team => {
-                    const optionHome = document.createElement('option');
-                    optionHome.value = team;
-                    optionHome.textContent = team;
-                    homeTeamSelect.appendChild(optionHome);
-
-                    const optionAway = document.createElement('option');
-                    optionAway.value = team;
-                    optionAway.textContent = team;
-                    awayTeamSelect.appendChild(optionAway);
-                });
-            } catch (error) {
-                console.error('Error fetching team data:', error);
-            }
+    <title>NFL Predictions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
         }
-
-        // Call fetchTeams when the page loads
-        window.onload = fetchTeams;
-    </script>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-    <h1>Game Prediction</h1>
-    <form action="/predict2-custom" method="GET">
-        <label for="home_team">Home Team:</label>
-        <select id="home_team" name="home_team">
-            <option value="">Select Home Team</option>
-        </select>
+    <div class="container">
+        <h1>NFL Predictions</h1>
 
-        <label for="away_team">Away Team:</label>
-        <select id="away_team" name="away_team">
-            <option value="">Select Away Team</option>
-        </select>
+        <form id="team-selection-form">
+            <label for="home-team">Select Home Team:</label>
+            <select id="home-team" name="home_team">
+                <!-- Options will be dynamically inserted -->
+            </select>
 
-        <button type="submit">Predict Game</button>
-    </form>
+            <label for="away-team">Select Away Team:</label>
+            <select id="away-team" name="away_team">
+                <!-- Options will be dynamically inserted -->
+            </select>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <div id="result" class="result" style="display: none;">
+            <h3>Prediction Result</h3>
+            <p id="prediction-text"></p>
+        </div>
+    </div>
+
+    <script>
+        // Fetch teams and populate dropdowns
+        fetch('/teams')
+            .then(response => response.json())
+            .then(data => {
+                const homeTeamSelect = document.getElementById('home-team');
+                const awayTeamSelect = document.getElementById('away-team');
+
+                data.teams.forEach(team => {
+                    const option = document.createElement('option');
+                    option.value = team;
+                    option.textContent = team;
+                    homeTeamSelect.appendChild(option.cloneNode(true));
+                    awayTeamSelect.appendChild(option);
+                });
+            });
+
+        // Handle form submission
+        document.getElementById('team-selection-form').addEventListener('submit', event => {
+            event.preventDefault();
+
+            const homeTeam = document.getElementById('home-team').value;
+            const awayTeam = document.getElementById('away-team').value;
+
+            fetch(`/predict2-custom?home_team=${homeTeam}&away_team=${awayTeam}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('result');
+                    const predictionText = document.getElementById('prediction-text');
+
+                    if (data.error) {
+                        predictionText.textContent = `Error: ${data.error}`;
+                    } else {
+                        predictionText.textContent = `Predicted Winner: ${data.predicted_winner} with a ${data.win_probability.toFixed(2)}% chance.`;
+                    }
+
+                    resultDiv.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to fetch prediction. Please try again.');
+                });
+        });
+    </script>
 </body>
 </html>
