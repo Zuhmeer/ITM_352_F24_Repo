@@ -103,10 +103,10 @@ nfl_data = load_nfl_data()
 def home():
     return render_template('index.html')
 
-@app.route('/standings', methods=['GET'])
+@app.route('/standings2', methods=['GET'])
 def standings():
     if nfl_data and 'standings' in nfl_data:
-        return jsonify(nfl_data['standings'].to_dict(orient='records'))
+        return jsonify(nfl_data['standings2'].to_dict(orient='records'))
     else:
         return jsonify({"error": "Standings data not available."}), 500
 
@@ -122,7 +122,7 @@ def past_games():
 def predict():
     if nfl_data and 'games' in nfl_data and 'standings' in nfl_data:
         upcoming_games = nfl_data['games'][nfl_data['games']['result'].isna()]
-        standings = nfl_data['standings']
+        standings = nfl_data['standings2']
 
         predictions = []
         for _, game in upcoming_games.iterrows():
