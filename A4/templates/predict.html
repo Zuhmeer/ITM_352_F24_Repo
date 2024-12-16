@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Matchup Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        select, button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Predict Match Outcome</h1>
+        <form id="prediction-form">
+            <label for="home-team">Select Home Team:</label>
+            <select id="home-team" name="home-team">
+                <option value="" disabled selected>Select a team</option>
+            </select>
+
+            <label for="away-team">Select Away Team:</label>
+            <select id="away-team" name="away-team">
+                <option value="" disabled selected>Select a team</option>
+            </select>
+
+            <button type="submit">Predict Outcome</button>
+        </form>
+
+        <div class="result" id="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Fetch teams to populate dropdowns
+        fetch('/teams')
+            .then(response => response.json())
+            .then(data => {
+                const homeSelect = document.getElementById('home-team');
+                const awaySelect = document.getElementById('away-team');
+
+                data.forEach(team => {
+                    const optionHome = document.createElement('option');
+                    optionHome.value = team;
+                    optionHome.textContent = team;
+                    homeSelect.appendChild(optionHome);
+
+                    const optionAway = document.createElement('option');
+                    optionAway.value = team;
+                    optionAway.textContent = team;
+                    awaySelect.appendChild(optionAway);
+                });
+            })
+            .catch(error => console.error('Error fetching teams:', error));
+
+        // Handle form submission
+        document.getElementById('prediction-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const homeTeam = document.getElementById('home-team').value;
+            const awayTeam = document.getElementById('away-team').value;
+
+            if (!homeTeam || !awayTeam) {
+                alert('Please select both teams.');
+                return;
+            }
+
+            fetch(`/predict-match`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ home_team: homeTeam, away_team: awayTeam }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.style.display = 'block';
+                    if (data.error) {
+                        resultDiv.textContent = `Error: ${data.error}`;
+                        resultDiv.style.color = 'red';
+                    } else {
+                        resultDiv.innerHTML = `
+                            <strong>Predicted Winner:</strong> ${data.predicted_winner}<br>
+                            <strong>Win Probability:</strong> ${(data.win_probability * 100).toFixed(2)}%
+                        `;
+                        resultDiv.style.color = 'black';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error predicting match:', error);
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = 'An error occurred while predicting the match. Please try again.';
+                    resultDiv.style.color = 'red';
+                });
+        });
+    </script>
+</body>
+</html>

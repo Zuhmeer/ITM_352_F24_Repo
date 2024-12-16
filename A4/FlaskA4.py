@@ -169,5 +169,66 @@ def predict2_data():
         return jsonify({"error": "Prediction data not available."}), 500
 
 
+@app.route('/teams')
+def teams():
+    if nfl_data and 'standings' in nfl_data:
+        teams = nfl_data['standings']['team'].tolist()
+        return jsonify({"teams": teams})
+    else:
+        return jsonify({"error": "Team data not available."}), 500
+
+
+@app.route('/predict2-custom', methods=['GET'])
+def predict2_custom():
+    home_team = request.args.get('home_team')
+    away_team = request.args.get('away_team')
+
+    if not home_team or not away_team:
+        return jsonify({"error": "Both teams must be selected."}), 400
+
+    if home_team == away_team:
+        return jsonify({"error": "Teams must be different."}), 400
+
+    if nfl_data and 'standings' in nfl_data:
+        standings = nfl_data['standings']
+        if home_team not in standings['team'].values or away_team not in standings['team'].values:
+            return jsonify({"error": "Selected teams are not valid."}), 400
+
+        home_stats = standings[standings['team'] == home_team].iloc[0]
+        away_stats = standings[standings['team'] == away_team].iloc[0]
+
+        home_total_games = home_stats['total_wins'] + home_stats['total_losses'] + home_stats['total_ties']
+        away_total_games = away_stats['total_wins'] + away_stats['total_losses'] + away_stats['total_ties']
+
+        home_win_rate = home_stats['total_wins'] / home_total_games if home_total_games > 0 else 0
+        away_win_rate = away_stats['total_wins'] / away_total_games if away_total_games > 0 else 0
+
+        home_probability = home_win_rate / (home_win_rate + away_win_rate) if (home_win_rate + away_win_rate) > 0 else 0.5
+        away_probability = 1 - home_probability
+
+        predicted_winner = home_team if home_probability > away_probability else away_team
+
+        return jsonify({
+            "home_team": home_team,
+            "away_team": away_team,
+            "predicted_winner": predicted_winner,
+            "win_probability": max(home_probability, away_probability) * 100
+        })
+    else:
+        return jsonify({"error": "Prediction data not available."}), 500
+
+
+@app.route('/teams', methods=['GET'])
+def get_teams():
+    nfl_teams = [
+        "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", 
+        "HOU", "IND", "JAX", "KC", "LV", "LAC", "LA", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", 
+        "PHI", "PIT", "SF", "SEA", "TB", "TEN", "WAS"
+    ]
+    return jsonify({"teams": nfl_teams})
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
