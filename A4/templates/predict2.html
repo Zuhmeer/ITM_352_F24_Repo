@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Predictions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upcoming Game Predictions</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Home Team</th>
+                    <th>Away Team</th>
+                    <th>Predicted Winner</th>
+                    <th>Win Probability</th>
+                </tr>
+            </thead>
+            <tbody id="predictions-body">
+                <!-- Predictions will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Fetch predictions from the Flask route
+        fetch('/predict2-data')
+            .then(response => response.json())
+            .then(data => {
+                const predictionsBody = document.getElementById('predictions-body');
+                if (data.error) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="4" style="color: red; text-align: center;">${data.error}</td>`;
+                    predictionsBody.appendChild(row);
+                } else {
+                    data.forEach(prediction => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${prediction.home_team}</td>
+                            <td>${prediction.away_team}</td>
+                            <td>${prediction.predicted_winner}</td>
+                            <td>${(prediction.win_probability * 100).toFixed(2)}%</td>
+                        `;
+                        predictionsBody.appendChild(row);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching predictions:', error);
+                const predictionsBody = document.getElementById('predictions-body');
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="4" style="color: red; text-align: center;">Error fetching predictions. Please try again later.</td>`;
+                predictionsBody.appendChild(row);
+            });
+    </script>
+</body>
+</html>

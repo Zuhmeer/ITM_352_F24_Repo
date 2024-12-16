@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify
 import nfl_data_py as nfl
 import pandas as pd
 import ssl
@@ -33,9 +33,9 @@ def load_nfl_data():
 
         if 'home_score' in schedules.columns and 'away_score' in schedules.columns:
             schedules['result'] = schedules.apply(
-        lambda row: 'W' if row['home_score'] > row['away_score'] else ('L' if row['home_score'] < row['away_score'] else 'TBD'),
-        axis=1
-    )
+                lambda row: 'W' if row['home_score'] > row['away_score'] else 'L',
+                axis=1
+            )
         else:
             raise ValueError("Scores are missing from the schedules data.")
 
@@ -117,19 +117,15 @@ def pastgames2():
     if nfl_data and 'games' in nfl_data:
         games = nfl_data['games']
         past_games = games[games['result'].notna()]
-        
         return render_template('pastgames2.html', games=games.to_dict(orient='records'), past_games=past_games.to_dict(orient='records'))
     else:
         return jsonify({"error": "Games or past games data not available."}), 500
 
+if __name__ == '__main__':
+    app.run(debug=True)
 
-@app.route('/predict2')
-def predict2_page():
-    return render_template('predict2.html')  # Serve the predictions page
-
-
-@app.route('/predict2-data', methods=['GET'])
-def predict2_data():
+@app.route('/predict2', methods=['GET'])
+def predict2():
     if nfl_data and 'games' in nfl_data and 'standings' in nfl_data:
         upcoming_games = nfl_data['games'][nfl_data['games']['result'].isna()]
         standings = nfl_data['standings']
@@ -138,10 +134,6 @@ def predict2_data():
         for _, game in upcoming_games.iterrows():
             home_team = game['home_team']
             away_team = game['away_team']
-
-            # Defensive check for standings lookup
-            if home_team not in standings['team'].values or away_team not in standings['team'].values:
-                continue
 
             home_stats = standings[standings['team'] == home_team].iloc[0]
             away_stats = standings[standings['team'] == away_team].iloc[0]
@@ -164,10 +156,9 @@ def predict2_data():
                 'win_probability': max(home_probability, away_probability)
             })
 
-        return jsonify(predictions)
+        return render_template('predict2.html', predictions=predictions)
     else:
         return jsonify({"error": "Prediction data not available."}), 500
 
-
-if __name__ == '__main__':
+if __name__ == '__main':
     app.run(debug=True)
