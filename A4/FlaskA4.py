@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify
 import nfl_data_py as nfl
 import pandas as pd
 import ssl
@@ -66,15 +66,15 @@ def load_nfl_data():
         standings['total_ties'] = standings['ties_x'] + standings['ties_y']
 
         divisions = {
-            "AFC East": ["Buffalo Bills", "Miami Dolphins", "New York Jets", "New England Patriots"],
-            "AFC North": ["Pittsburgh Steelers", "Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns"],
-            "AFC South": ["Houston Texans", "Indianapolis Colts", "Tennessee Titans", "Jacksonville Jaguars"],
-            "AFC West": ["Kansas City Chiefs", "Los Angeles Chargers", "Denver Broncos", "Las Vegas Raiders"],
-            "NFC East": ["Philadelphia Eagles", "Washington Commanders", "Dallas Cowboys", "New York Giants"],
-            "NFC North": ["Detroit Lions", "Minnesota Vikings", "Green Bay Packers", "Chicago Bears"],
-            "NFC South": ["Atlanta Falcons", "Tampa Bay Buccaneers", "New Orleans Saints", "Carolina Panthers"],
-            "NFC West": ["Seattle Seahawks", "Arizona Cardinals", "Los Angeles Rams", "San Francisco 49ers"],
-        }
+    "AFC East": ["BUF", "MIA", "NYJ", "NE"],
+    "AFC North": ["PIT", "BAL", "CIN", "CLE"],
+    "AFC South": ["HOU", "IND", "TEN", "JAX"],
+    "AFC West": ["KC", "LAC", "DEN", "LV"],
+    "NFC East": ["PHI", "WAS", "DAL", "NYG"],
+    "NFC North": ["DET", "MIN", "GB", "CHI"],
+    "NFC South": ["ATL", "TB", "NO", "CAR"],
+    "NFC West": ["SEA", "ARI", "LA", "SF"]
+}
 
         standings['division'] = standings['team'].apply(
             lambda team: next((div for div, teams in divisions.items() if team in teams), "Unknown")
@@ -102,21 +102,27 @@ nfl_data = load_nfl_data()
 @app.route('/')
 def home():
     return render_template('index.html')
+print(nfl_data)
 
-@app.route('/standings2', methods=['GET'])
-def standings():
-    if nfl_data and 'standings' in nfl_data:
-        return jsonify(nfl_data['standings2'].to_dict(orient='records'))
+@app.route('/standings2')
+def standings2():
+    if nfl_data and 'standings' in nfl_data and 'teams' in nfl_data:
+        return render_template('standings2.html', standings=nfl_data['standings'].to_dict(orient='records'), team=nfl_data['teams'].to_dict(orient='records'))
     else:
-        return jsonify({"error": "Standings data not available."}), 500
-
-@app.route('/past_games', methods=['GET'])
-def past_games():
+        return jsonify({"error": "Standings or teams data not available."}), 500
+    
+    
+@app.route('/pastgames2')
+def pastgames2():
     if nfl_data and 'games' in nfl_data:
-        past_games = nfl_data['games'][nfl_data['games']['result'].notna()]
-        return jsonify(past_games[['home_team', 'away_team', 'home_score', 'away_score', 'result']].to_dict(orient='records'))
+        games = nfl_data['games']
+        past_games = games[games['result'].notna()]
+        return render_template('pastgames2.html', games=games.to_dict(orient='records'), past_games=past_games.to_dict(orient='records'))
     else:
-        return jsonify({"error": "Past games data not available."}), 500
+        return jsonify({"error": "Games or past games data not available."}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 @app.route('/predict', methods=['GET'])
 def predict():

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,6 +53,54 @@
                     </thead>
                     <tbody>
                         {% for team in standings if team.division == "AFC West" %}
+                        <tr>
+                            <td>{{ team.team }}</td>
+                            <td>{{ team.total_wins }}</td>
+                            <td>{{ team.total_losses }}</td>
+                            <td>{{ team.total_ties }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h3>AFC North</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Ties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in standings if team.division == "AFC North" %}
+                        <tr>
+                            <td>{{ team.team }}</td>
+                            <td>{{ team.total_wins }}</td>
+                            <td>{{ team.total_losses }}</td>
+                            <td>{{ team.total_ties }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h3>AFC South</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Ties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in standings if team.division == "AFC South" %}
                         <tr>
                             <td>{{ team.team }}</td>
                             <td>{{ team.total_wins }}</td>
@@ -118,8 +167,57 @@
                 </table>
             </div>
 
+            <div>
+                <h3>NFC North</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Ties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in standings if team.division == "NFC North" %}
+                        <tr>
+                            <td>{{ team.team }}</td>
+                            <td>{{ team.total_wins }}</td>
+                            <td>{{ team.total_losses }}</td>
+                            <td>{{ team.total_ties }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <h3>NFC South</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Ties</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in standings if team.division == "NFC South" %}
+                        <tr>
+                            <td>{{ team.team }}</td>
+                            <td>{{ team.total_wins }}</td>
+                            <td>{{ team.total_losses }}</td>
+                            <td>{{ team.total_ties }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
             <!-- Repeat the same structure for other NFC divisions -->
         </section>
     </main>
 </body>
 </html>
+

@@ -3,49 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Past Games</title>
+    <title>Past NFL Games</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <header>
-        <h1>Past Games</h1>
-        <a href="/">Back to Home</a>
+        <h1>Past NFL Games</h1>
     </header>
     <main>
-        <div id="games-container">
-            <h2>Loading Past Games...</h2>
-        </div>
-    </main>
-    <script>
-        fetch('/past_games')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('games-container');
-                container.innerHTML = '';
+        <!-- American Football Conference -->
+        <section>
+            <h2>American Football Conference</h2>
 
-                const table = document.createElement('table');
-                table.innerHTML = `
-                    <tr>
-                        <th>Home Team</th>
-                        <th>Away Team</th>
-                        <th>Home Score</th>
-                        <th>Away Score</th>
-                        <th>Result</th>
-                    </tr>
-                `;
-                data.forEach(game => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${game.home_team}</td>
-                        <td>${game.away_team}</td>
-                        <td>${game.home_score}</td>
-                        <td>${game.away_score}</td>
-                        <td>${game.result}</td>
-                    `;
-                    table.appendChild(row);
-                });
-                container.appendChild(table);
-            });
-    </script>
+            <!-- AFC East -->
+            <div>
+                <h3>AFC East</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Home Team</th>
+                            <th>Away Team</th>
+                            <th>Home Score</th>
+                            <th>Away Score</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in past_games if game.home_team_division == "AFC East" %}
+                        <tr>
+                            <td>{{ game.home_team }} </td>
+                            <td>{{ game.away_team }}</td>
+                            <td>{{ game.home_team_score }}</td>
+                            <td>{{ game.away_team_score }}</td>
+                            <td>{{ game.result }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AFC West -->
+            <div>
+                <h3>AFC West</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Home Team</th>
+                            <th>Away Team</th>
+                            <th>Home Score</th>
+                            <th>Away Score</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in past_games if game.home_team_division == "AFC West" %}
+                        <tr>
+                            <td>{{ game.home_team }} </td>
+                            <td>{{ game.away_team }}</td>
+                            <td>{{ game.home_team_score }}</td>
+                            <td>{{ game.away_team_score }}</td>
+                            <td>{{ game.result }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Repeat for other AFC divisions -->
+        </section>
+
+        <!-- National Football Conference -->
+        <section>
+            <h2>National Football Conference</h2>
+
+            <!-- NFC East -->
+            <div>
+                <h3>NFC East</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Home Team</th>
+                            <th>Away Team</th>
+                            <th>Home Score</th>
+                            <th>Away Score</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in past_games if game.home_team_division == "NFC East" %}
+                        <tr>
+                            <td>{{ game.home_team }} </td>
+                            <td>{{ game.away_team }}</td>
+                            <td>{{ game.home_team_score }}</td>
+                            <td>{{ game.away_team_score }}</td>
+                            <td>{{ game.result }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Repeat for other NFC divisions -->
+        </section>
+    </main>
 </body>
 </html>
